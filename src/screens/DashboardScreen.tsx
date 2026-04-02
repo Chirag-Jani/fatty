@@ -14,6 +14,7 @@ import {
   getWaterMl,
 } from '../storage/storage';
 import { useUser } from '../context/UserContext';
+import { estimateCaloriesBurnedFromSteps } from '../utils/calories';
 
 function sumDay(day: DayFoodLog) {
   const all: FoodEntry[] = [
@@ -69,8 +70,18 @@ export function DashboardScreen() {
 
   const goal = profile?.dailyCalorieGoal ?? 0;
   const totals = day ? sumDay(day) : { cal: 0, p: 0, c: 0, f: 0 };
-  const remaining = Math.max(0, goal - totals.cal);
-  const pct = goal > 0 ? Math.min(100, (totals.cal / goal) * 100) : 0;
+  const stepsBurnKcal =
+    profile && steps
+      ? estimateCaloriesBurnedFromSteps({
+          steps,
+          heightCm: profile.heightCm,
+          weightKg: profile.currentWeightKg,
+        })
+      : 0;
+
+  const adjustedGoal = goal + stepsBurnKcal;
+  const remaining = Math.max(0, adjustedGoal - totals.cal);
+  const pct = adjustedGoal > 0 ? Math.min(100, (totals.cal / adjustedGoal) * 100) : 0;
   const waterPct = Math.min(100, (water / WATER_GOAL) * 100);
 
   useEffect(() => {
@@ -107,7 +118,7 @@ export function DashboardScreen() {
           <Text style={styles.cardTitle}>Calories</Text>
           <View style={styles.calRow}>
             <Text style={styles.calBig}>{Math.round(totals.cal)}</Text>
-            <Text style={styles.calGoal}> / {goal} kcal</Text>
+            <Text style={styles.calGoal}> / {adjustedGoal} kcal</Text>
           </View>
           <View
             style={styles.barBg}
@@ -116,10 +127,13 @@ export function DashboardScreen() {
             <Animated.View style={[styles.barFill, { width: calFillW }]} />
           </View>
           <Text style={styles.remain}>
-            {totals.cal <= goal
+            {totals.cal <= adjustedGoal
               ? `${Math.round(remaining)} kcal remaining`
-              : `${Math.round(totals.cal - goal)} kcal over goal`}
+              : `${Math.round(totals.cal - adjustedGoal)} kcal over goal`}
           </Text>
+          {stepsBurnKcal > 0 ? (
+            <Text style={styles.hint}>Includes +{stepsBurnKcal} kcal from steps</Text>
+          ) : null}
         </Card>
 
         <Card>
@@ -218,6 +232,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   remain: { marginTop: SPACING.sm, fontSize: 15, color: COLORS.text },
+  hint: { marginTop: 6, fontSize: 13, color: COLORS.textSecondary },
   macroRow: { flexDirection: 'row', justifyContent: 'space-between' },
   macroItem: { alignItems: 'center', flex: 1 },
   macroVal: { fontSize: 22, fontWeight: '700' },

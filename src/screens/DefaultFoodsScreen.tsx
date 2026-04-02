@@ -313,6 +313,11 @@ export function DefaultFoodsScreen() {
                   selected={form.amountUnit === "ml"}
                   onPress={() => setForm((f) => ({ ...f, amountUnit: "ml" }))}
                 />
+                <Chip
+                  label="Pieces"
+                  selected={form.amountUnit === "pcs"}
+                  onPress={() => setForm((f) => ({ ...f, amountUnit: "pcs" }))}
+                />
               </View>
 
               <Text style={styles.label}>Name</Text>
@@ -326,7 +331,9 @@ export function DefaultFoodsScreen() {
               />
 
               <Text style={styles.label}>
-                Calories per 100{form.amountUnit} (kcal)
+                {form.amountUnit === "pcs"
+                  ? "Calories per piece (kcal)"
+                  : `Calories per 100${form.amountUnit} (kcal)`}
               </Text>
               <TextInput
                 style={styles.input}
@@ -340,7 +347,9 @@ export function DefaultFoodsScreen() {
               <View style={styles.grid}>
                 <View style={styles.gridCol}>
                   <Text style={styles.label}>
-                    Protein / 100{form.amountUnit}
+                    {form.amountUnit === "pcs"
+                      ? "Protein / piece"
+                      : `Protein / 100${form.amountUnit}`}
                   </Text>
                   <TextInput
                     style={styles.input}
@@ -354,7 +363,11 @@ export function DefaultFoodsScreen() {
                   />
                 </View>
                 <View style={styles.gridCol}>
-                  <Text style={styles.label}>Carbs / 100{form.amountUnit}</Text>
+                  <Text style={styles.label}>
+                    {form.amountUnit === "pcs"
+                      ? "Carbs / piece"
+                      : `Carbs / 100${form.amountUnit}`}
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={form.carbsPer100}
@@ -368,7 +381,11 @@ export function DefaultFoodsScreen() {
                 </View>
               </View>
 
-              <Text style={styles.label}>Fat / 100{form.amountUnit}</Text>
+              <Text style={styles.label}>
+                {form.amountUnit === "pcs"
+                  ? "Fat / piece"
+                  : `Fat / 100${form.amountUnit}`}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={form.fatPer100}

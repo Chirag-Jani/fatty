@@ -25,7 +25,7 @@ export interface UserProfile {
 
 export type MealSection = 'breakfast' | 'lunch' | 'dinner' | 'snacks';
 
-export type FoodAmountUnit = 'g' | 'ml';
+export type FoodAmountUnit = 'g' | 'ml' | 'pcs';
 
 export interface FoodEntry {
   id: string;

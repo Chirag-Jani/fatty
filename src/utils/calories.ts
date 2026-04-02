@@ -77,3 +77,22 @@ export function scaleFromPer100g(
     fat: Math.round(per100.fatPer100g * f * 10) / 10,
   };
 }
+
+export function estimateCaloriesBurnedFromSteps(input: {
+  steps: number;
+  heightCm: number;
+  weightKg: number;
+}): number {
+  const steps = Math.max(0, Math.floor(input.steps || 0));
+  const heightCm = Math.max(0, input.heightCm || 0);
+  const weightKg = Math.max(0, input.weightKg || 0);
+  if (!steps || !heightCm || !weightKg) return 0;
+
+  // Simple offline estimate:
+  // - stride length ≈ 0.415 * height
+  // - calories ≈ weightKg * distanceKm * 0.75 (rough walking average)
+  const strideM = (heightCm * 0.415) / 100;
+  const distanceKm = (steps * strideM) / 1000;
+  const kcal = weightKg * distanceKm * 0.75;
+  return Math.round(Math.max(0, kcal));
+}

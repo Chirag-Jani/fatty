@@ -60,7 +60,7 @@ export async function getFoodLogs(): Promise<FoodLogsByDate> {
           return {
             ...e,
             amount: typeof e.amount === 'number' ? e.amount : 0,
-            amountUnit: e.amountUnit === 'ml' ? 'ml' : 'g',
+            amountUnit: e.amountUnit === 'ml' || e.amountUnit === 'pcs' ? e.amountUnit : 'g',
           };
         });
       }
@@ -86,7 +86,10 @@ export async function getFoodTemplates(): Promise<FoodTemplatesById> {
     for (const [id, t] of Object.entries(parsed ?? {})) {
       if (!t || typeof t !== 'object') continue;
       // Back-compat: older templates used kcalPer100g/proteinPer100g/etc and had no amountUnit.
-      const amountUnit = (t.amountUnit === 'ml' || t.amountUnit === 'g') ? t.amountUnit : 'g';
+      const amountUnit =
+        t.amountUnit === 'ml' || t.amountUnit === 'g' || t.amountUnit === 'pcs'
+          ? t.amountUnit
+          : 'g';
       const kcalPer100 = typeof t.kcalPer100 === 'number' ? t.kcalPer100 : t.kcalPer100g;
       const proteinPer100 = typeof t.proteinPer100 === 'number' ? t.proteinPer100 : t.proteinPer100g;
       const carbsPer100 = typeof t.carbsPer100 === 'number' ? t.carbsPer100 : t.carbsPer100g;

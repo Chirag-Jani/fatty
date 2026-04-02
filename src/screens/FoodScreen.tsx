@@ -28,9 +28,12 @@ import {
   addFoodEntry,
   getDayFoodLog,
   getFoodTemplates,
+  getStepsForDay,
   removeFoodEntry,
 } from '../storage/storage';
 import { createId } from '../utils/id';
+import { estimateCaloriesBurnedFromSteps } from '../utils/calories';
+import { useUser } from '../context/UserContext';
 
 const SECTIONS: { key: MealSection; label: string }[] = [
   { key: 'breakfast', label: 'Breakfast' },
@@ -74,8 +77,10 @@ function MealBlock({
 }
 
 export function FoodScreen() {
+  const { profile } = useUser();
   const todayKey = format(new Date(), 'yyyy-MM-dd');
   const [day, setDay] = useState<DayFoodLog | null>(null);
+  const [stepsToday, setStepsToday] = useState(0);
   const [mealForAdd, setMealForAdd] = useState<MealSection>('breakfast');
   const [addSheetVisible, setAddSheetVisible] = useState(false);
   const addSheetAnim = useRef(new Animated.Value(0)).current;
@@ -86,14 +91,20 @@ export function FoodScreen() {
   const [amount, setAmount] = useState('100');
 
   useEffect(() => {
+    if (!selectedTemplate) return;
+    setAmount(selectedTemplate.amountUnit === 'pcs' ? '1' : '100');
+  }, [selectedTemplateId]);
+
+  useEffect(() => {
     if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }, []);
 
   const load = useCallback(async () => {
-    const d = await getDayFoodLog(todayKey);
+    const [d, s] = await Promise.all([getDayFoodLog(todayKey), getStepsForDay(todayKey)]);
     setDay(d);
+    setStepsToday(s);
   }, [todayKey]);
 
   const loadTemplates = useCallback(async () => {
@@ -111,8 +122,10 @@ export function FoodScreen() {
   function showAddSheet(meal: MealSection) {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setMealForAdd(meal);
-    setSelectedTemplateId(templates.length ? templates[0].id : null);
-    setAmount('100');
+    const firstId = templates.length ? templates[0].id : null;
+    setSelectedTemplateId(firstId);
+    const first = firstId ? templatesById[firstId] : null;
+    setAmount(first?.amountUnit === 'pcs' ? '1' : '100');
     setAddSheetVisible(true);
     addSheetAnim.setValue(0);
     Animated.timing(addSheetAnim, {
@@ -144,12 +157,24 @@ export function FoodScreen() {
       )
     : { cal: 0, p: 0, c: 0, f: 0 };
 
+  const stepsBurnKcal =
+    profile && stepsToday
+      ? estimateCaloriesBurnedFromSteps({
+          steps: stepsToday,
+          heightCm: profile.heightCm,
+          weightKg: profile.currentWeightKg,
+        })
+      : 0;
+  const goal = profile?.dailyCalorieGoal ?? 0;
+  const adjustedGoal = goal + stepsBurnKcal;
+  const remaining = Math.max(0, adjustedGoal - totals.cal);
+
   async function addSelectedToLog() {
     if (!selectedTemplate) return;
     const a = parseFloat(amount.replace(',', '.')) || 0;
     if (!a || a <= 0) return;
 
-    const f = a / 100;
+    const f = selectedTemplate.amountUnit === 'pcs' ? a : a / 100;
     const entry: FoodEntry = {
       id: createId(),
       name: selectedTemplate.name,
@@ -200,6 +225,14 @@ export function FoodScreen() {
             P {Math.round(totals.p * 10) / 10} g · C {Math.round(totals.c * 10) / 10} g · F{' '}
             {Math.round(totals.f * 10) / 10} g
           </Text>
+          {goal > 0 ? (
+            <Text style={styles.totSub}>
+              {totals.cal <= adjustedGoal
+                ? `${Math.round(remaining)} kcal remaining`
+                : `${Math.round(totals.cal - adjustedGoal)} kcal over goal`}
+              {stepsBurnKcal > 0 ? ` (includes +${stepsBurnKcal} from steps)` : ''}
+            </Text>
+          ) : null}
         </Card>
 
         {SECTIONS.map(({ key, label }) => (
@@ -269,8 +302,9 @@ export function FoodScreen() {
                           <View style={{ flex: 1 }}>
                             <Text style={styles.tName}>{item.name}</Text>
                             <Text style={styles.tMeta}>
-                              {Math.round(item.kcalPer100)} kcal / 100{item.amountUnit} · P {item.proteinPer100} · C{' '}
-                              {item.carbsPer100} · F {item.fatPer100}
+                              {Math.round(item.kcalPer100)} kcal /{' '}
+                              {item.amountUnit === 'pcs' ? 'piece' : `100${item.amountUnit}`} · P{' '}
+                              {item.proteinPer100} · C {item.carbsPer100} · F {item.fatPer100}
                             </Text>
                           </View>
                           <View style={[styles.checkWrap, on && styles.checkWrapOn]}>
@@ -301,6 +335,8 @@ export function FoodScreen() {
                   value={amount}
                   onChangeText={setAmount}
                   keyboardType="decimal-pad"
+                  placeholder={selectedTemplate?.amountUnit === 'pcs' ? '1' : '100'}
+                  placeholderTextColor={COLORS.textSecondary}
                 />
                 <View style={styles.addRow}>
                   <PrimaryButton
@@ -340,6 +376,7 @@ const styles = StyleSheet.create({
   totLabel: { fontSize: 14, color: COLORS.textSecondary },
   totCal: { fontSize: 32, fontWeight: '700', color: COLORS.primaryDark },
   totMacro: { marginTop: SPACING.xs, fontSize: 15, color: COLORS.text },
+  totSub: { marginTop: 6, fontSize: 13, color: COLORS.textSecondary },
   mealHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
