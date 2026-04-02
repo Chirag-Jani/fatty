@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BarChart } from 'react-native-gifted-charts';
 import { Card } from '../components/Card';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, SPACING } from '../theme';
 import { getStepsLogs, setStepsForDay } from '../storage/storage';
 
@@ -51,9 +52,8 @@ export function StepsScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScreenHeader title="Steps" subtitle="Quick daily log + simple weekly view" accent="orange" />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.h1}>Steps</Text>
-        <Text style={styles.sub}>Manual entry for today</Text>
 
         <Card>
           <Text style={styles.label}>Steps today</Text>
@@ -99,8 +99,6 @@ export function StepsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
   scroll: { padding: SPACING.md, paddingBottom: SPACING.xl },
-  h1: { fontSize: 24, fontWeight: '700', color: COLORS.text },
-  sub: { color: COLORS.textSecondary, marginBottom: SPACING.md },
   label: { fontSize: 14, fontWeight: '600', marginBottom: SPACING.xs },
   input: {
     borderWidth: 1,
@@ -110,6 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: SPACING.md,
     color: COLORS.text,
+    backgroundColor: 'rgba(0,0,0,0.18)',
   },
   saved: { marginTop: SPACING.md, color: COLORS.textSecondary },
   chartTitle: { fontSize: 16, fontWeight: '600', marginBottom: SPACING.md, color: COLORS.text },

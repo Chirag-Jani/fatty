@@ -20,6 +20,7 @@ import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, RADIUS, SPACING } from '../theme';
 import type { DayFoodLog, FoodEntry, FoodTemplate, MealSection } from '../types';
 import {
@@ -181,9 +182,8 @@ export function FoodScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScreenHeader title="Food" subtitle={todayKey} accent="green" />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.h1}>Food</Text>
-        <Text style={styles.sub}>{todayKey}</Text>
 
         <Card>
           <Text style={styles.totLabel}>Today</Text>
@@ -242,7 +242,7 @@ export function FoodScreen() {
               </View>
             </View>
 
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.sheetScroll}>
               {templates.length ? (
                 <View style={styles.templateList}>
                   <Text style={styles.sectionTitle}>Your default foods</Text>
@@ -307,8 +307,6 @@ export function FoodScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
   scroll: { padding: SPACING.md, paddingBottom: 120 },
-  h1: { fontSize: 24, fontWeight: '700', color: COLORS.text },
-  sub: { color: COLORS.textSecondary, marginBottom: SPACING.md },
   totLabel: { fontSize: 14, color: COLORS.textSecondary },
   totCal: { fontSize: 32, fontWeight: '700', color: COLORS.primaryDark },
   totMacro: { marginTop: SPACING.xs, fontSize: 15, color: COLORS.text },
@@ -353,6 +351,7 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     maxHeight: '92%',
   },
+  sheetScroll: { paddingBottom: 16 },
   modalTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',

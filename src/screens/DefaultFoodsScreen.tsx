@@ -240,7 +240,7 @@ export function DefaultFoodsScreen() {
               </Pressable>
             </View>
 
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.sheetScroll}>
               <Text style={styles.label}>Type</Text>
               <View style={styles.chipRow}>
                 <Chip
@@ -380,6 +380,7 @@ const styles = StyleSheet.create({
   sheetTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md },
   sheetTitle: { fontSize: 18, fontWeight: '800', color: COLORS.text },
   closeBtn: { padding: 6 },
+  sheetScroll: { paddingBottom: 16 },
   label: { fontSize: 13, fontWeight: '700', color: COLORS.textSecondary, marginBottom: SPACING.xs },
   input: {
     borderWidth: 1,

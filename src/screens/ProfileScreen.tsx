@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, SPACING } from '../theme';
 import type { ActivityLevel, Gender, WeeklyLossKg } from '../types';
 import { buildProfileFromInputs } from '../utils/calories';
@@ -144,16 +145,14 @@ export function ProfileScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text style={styles.title}>Profile</Text>
-          <Text style={styles.sub}>
-            Daily goal: {profile.dailyCalorieGoal} kcal (BMR {profile.bmr}, TDEE {profile.tdee})
-          </Text>
+        <ScreenHeader
+          title="Profile"
+          subtitle={`Daily goal: ${profile.dailyCalorieGoal} kcal (BMR ${profile.bmr}, TDEE ${profile.tdee})`}
+          accent="blue"
+        />
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
           <Text style={styles.label}>Name</Text>
           <TextInput
@@ -233,8 +232,6 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
   flex: { flex: 1 },
   scroll: { padding: SPACING.md, paddingBottom: SPACING.xl },
-  title: { fontSize: 24, fontWeight: '700', color: COLORS.text, marginBottom: SPACING.sm },
-  sub: { fontSize: 14, color: COLORS.textSecondary, marginBottom: SPACING.lg },
   label: { fontSize: 14, fontWeight: '600', color: COLORS.text, marginBottom: SPACING.xs },
   input: {
     borderWidth: 1,
@@ -245,7 +242,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: COLORS.text,
     marginBottom: SPACING.md,
-    backgroundColor: COLORS.card,
+    backgroundColor: 'rgba(0,0,0,0.18)',
   },
   field: { marginBottom: SPACING.md },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },

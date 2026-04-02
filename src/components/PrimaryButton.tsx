@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, RADIUS, SPACING } from '../theme';
 
 type Props = Omit<PressableProps, 'style'> & {
@@ -20,7 +21,7 @@ export function PrimaryButton({ title, loading, disabled, style, ...rest }: Prop
   return (
     <Pressable
       style={({ pressed }) => [
-        styles.btn,
+        styles.btnOuter,
         dim && styles.btnDisabled,
         pressed && !dim && styles.pressed,
         style,
@@ -28,34 +29,50 @@ export function PrimaryButton({ title, loading, disabled, style, ...rest }: Prop
       disabled={dim}
       {...rest}
     >
-      {loading ? (
-        <ActivityIndicator color="#fff" />
-      ) : (
-        <Text style={styles.text}>{title}</Text>
-      )}
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryDark]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.btnInner}
+      >
+        {loading ? (
+          <ActivityIndicator color="#0E1210" />
+        ) : (
+          <Text style={styles.text}>{title}</Text>
+        )}
+      </LinearGradient>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  btn: {
-    backgroundColor: COLORS.primary,
+  btnOuter: {
+    borderRadius: RADIUS.md,
+    overflow: 'hidden',
+    minHeight: 54,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 3,
+  },
+  btnInner: {
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
-    borderRadius: RADIUS.md,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 52,
+    minHeight: 54,
   },
   btnDisabled: {
     opacity: 0.5,
   },
   pressed: {
-    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
   },
   text: {
-    color: '#fff',
+    color: '#0E1210',
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: '900',
+    letterSpacing: 0.2,
   },
 });

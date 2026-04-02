@@ -46,7 +46,27 @@ export async function getFoodLogs(): Promise<FoodLogsByDate> {
   const raw = await AsyncStorage.getItem(KEYS.FOOD_LOGS);
   if (!raw) return {};
   try {
-    return JSON.parse(raw) as FoodLogsByDate;
+    const parsed = JSON.parse(raw) as any;
+    if (!parsed || typeof parsed !== 'object') return {};
+
+    // Back-compat: older FoodEntry items may not have amount/amountUnit.
+    for (const day of Object.values(parsed)) {
+      if (!day || typeof day !== 'object') continue;
+      for (const section of ['breakfast', 'lunch', 'dinner', 'snacks'] as const) {
+        const arr = (day as any)[section];
+        if (!Array.isArray(arr)) continue;
+        (day as any)[section] = arr.map((e: any) => {
+          if (!e || typeof e !== 'object') return e;
+          return {
+            ...e,
+            amount: typeof e.amount === 'number' ? e.amount : 0,
+            amountUnit: e.amountUnit === 'ml' ? 'ml' : 'g',
+          };
+        });
+      }
+    }
+
+    return parsed as FoodLogsByDate;
   } catch {
     return {};
   }

@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, SPACING } from '../theme';
 import type { DayFoodLog, FoodEntry } from '../types';
 import {
@@ -92,9 +93,12 @@ export function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScreenHeader
+        title={`Hello${profile?.name ? `, ${profile.name}` : ''}`}
+        subtitle={format(new Date(), 'EEEE, d MMMM')}
+        accent="green"
+      />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.hi}>Hello{profile?.name ? `, ${profile.name}` : ''}</Text>
-        <Text style={styles.date}>{format(new Date(), 'EEEE, d MMMM')}</Text>
 
         <Card>
           <Text style={styles.cardTitle}>Calories</Text>
@@ -179,8 +183,6 @@ export function DashboardScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
   scroll: { padding: SPACING.md, paddingBottom: SPACING.xl },
-  hi: { fontSize: 24, fontWeight: '700', color: COLORS.text },
-  date: { fontSize: 15, color: COLORS.textSecondary, marginBottom: SPACING.md },
   cardTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, marginBottom: SPACING.sm },
   calRow: { flexDirection: 'row', alignItems: 'baseline', marginBottom: SPACING.sm },
   calBig: { fontSize: 36, fontWeight: '700', color: COLORS.primaryDark },
