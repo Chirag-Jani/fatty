@@ -3,8 +3,8 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../components/Card';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, SPACING } from '../theme';
 import type { DayFoodLog, FoodEntry } from '../types';
 import {
@@ -93,11 +93,14 @@ export function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScreenHeader
-        title={`Hello${profile?.name ? `, ${profile.name}` : ''}`}
-        subtitle={format(new Date(), 'EEEE, d MMMM')}
-        accent="green"
+      <LinearGradient
+        colors={['rgba(76,175,80,0.18)', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={styles.headerGlow}
       />
+      <Text style={styles.h1}>Hello{profile?.name ? `, ${profile.name}` : ''}</Text>
+      <Text style={styles.sub}>{format(new Date(), 'EEEE, d MMMM')}</Text>
       <ScrollView contentContainerStyle={styles.scroll}>
 
         <Card>
@@ -182,6 +185,22 @@ export function DashboardScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 220 },
+  h1: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    fontSize: 24,
+    fontWeight: '900',
+    color: COLORS.text,
+    letterSpacing: 0.2,
+  },
+  sub: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: 4,
+    paddingBottom: SPACING.sm,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
+  },
   scroll: { padding: SPACING.md, paddingBottom: SPACING.xl },
   cardTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, marginBottom: SPACING.sm },
   calRow: { flexDirection: 'row', alignItems: 'baseline', marginBottom: SPACING.sm },

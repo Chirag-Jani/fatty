@@ -18,11 +18,12 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../components/Card';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, RADIUS, SPACING } from '../theme';
 import type { DayFoodLog, FoodEntry, FoodTemplate, MealSection } from '../types';
+import { Ionicons } from '@expo/vector-icons';
 import {
   addFoodEntry,
   getDayFoodLog,
@@ -182,7 +183,14 @@ export function FoodScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScreenHeader title="Food" subtitle={todayKey} accent="green" />
+      <LinearGradient
+        colors={['rgba(76,175,80,0.18)', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={styles.headerGlow}
+      />
+      <Text style={styles.h1}>Food</Text>
+      <Text style={styles.sub}>{todayKey}</Text>
       <ScrollView contentContainerStyle={styles.scroll}>
 
         <Card>
@@ -265,7 +273,13 @@ export function FoodScreen() {
                               {item.carbsPer100} · F {item.fatPer100}
                             </Text>
                           </View>
-                          <Text style={styles.tPick}>{on ? 'Selected' : ''}</Text>
+                          <View style={[styles.checkWrap, on && styles.checkWrapOn]}>
+                            {on ? (
+                              <Ionicons name="checkmark" size={16} color="#0E1210" />
+                            ) : (
+                              <Ionicons name="ellipse-outline" size={16} color={COLORS.textSecondary} />
+                            )}
+                          </View>
                         </Pressable>
                       );
                     }}
@@ -306,6 +320,22 @@ export function FoodScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 220 },
+  h1: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    fontSize: 24,
+    fontWeight: '900',
+    color: COLORS.text,
+    letterSpacing: 0.2,
+  },
+  sub: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: 4,
+    paddingBottom: SPACING.sm,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
+  },
   scroll: { padding: SPACING.md, paddingBottom: 120 },
   totLabel: { fontSize: 14, color: COLORS.textSecondary },
   totCal: { fontSize: 32, fontWeight: '700', color: COLORS.primaryDark },
@@ -385,11 +415,24 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: COLORS.border,
+    paddingHorizontal: 10,
+    borderRadius: RADIUS.md,
+    marginBottom: 8,
   },
-  tRowOn: { backgroundColor: COLORS.chipSelectedBg },
+  tRowOn: { backgroundColor: COLORS.chipSelectedBg, borderWidth: 1, borderColor: COLORS.primaryDark },
   tName: { fontSize: 16, color: COLORS.text, fontWeight: '700' },
   tMeta: { fontSize: 12, color: COLORS.textSecondary, marginTop: 3 },
-  tPick: { fontSize: 12, color: COLORS.primary, fontWeight: '700' },
+  checkWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  checkWrapOn: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
 
   form: { paddingTop: SPACING.sm },
   addRow: { marginTop: SPACING.sm },

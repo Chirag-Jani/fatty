@@ -29,7 +29,7 @@ export function ScreenHeader({
   return (
     <View style={[styles.wrap, style]}>
       <LinearGradient
-        colors={[`${accentColor}2A`, 'rgba(0,0,0,0)']}
+        colors={[`${accentColor}38`, 'rgba(0,0,0,0)']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.9, y: 1 }}
         style={styles.glow}
@@ -47,7 +47,7 @@ export function ScreenHeader({
 
 const styles = StyleSheet.create({
   wrap: { position: 'relative' },
-  glow: { position: 'absolute', top: 0, left: 0, right: 0, height: 220 },
+  glow: { position: 'absolute', top: 0, left: 0, right: 0, height: 240 },
   row: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.md,
