@@ -8,9 +8,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, SPACING } from '../theme';
 import type { ActivityLevel, Gender, WeeklyLossKg } from '../types';
 import { buildProfileFromInputs } from '../utils/calories';
@@ -126,15 +126,18 @@ export function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <LinearGradient
+        colors={['rgba(255,183,77,0.18)', 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={styles.headerGlow}
+      />
+      <Text style={styles.h1}>Welcome</Text>
+      <Text style={styles.sub}>Tell us about yourself to set a daily calorie goal.</Text>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScreenHeader
-          title="Welcome"
-          subtitle="Tell us about yourself to set a daily calorie goal."
-          accent="green"
-        />
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
           <Text style={styles.label}>Name</Text>
@@ -213,6 +216,22 @@ export function OnboardingScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
+  headerGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 220 },
+  h1: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    fontSize: 24,
+    fontWeight: '900',
+    color: COLORS.text,
+    letterSpacing: 0.2,
+  },
+  sub: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: 4,
+    paddingBottom: SPACING.sm,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
+  },
   flex: { flex: 1 },
   scroll: { padding: SPACING.md, paddingBottom: SPACING.xl },
   label: { fontSize: 14, fontWeight: '600', color: COLORS.text, marginBottom: SPACING.xs },

@@ -61,6 +61,7 @@ export async function getFoodLogs(): Promise<FoodLogsByDate> {
             ...e,
             amount: typeof e.amount === 'number' ? e.amount : 0,
             amountUnit: e.amountUnit === 'ml' || e.amountUnit === 'pcs' ? e.amountUnit : 'g',
+            loggedAt: typeof e.loggedAt === 'number' && !Number.isNaN(e.loggedAt) ? e.loggedAt : undefined,
           };
         });
       }
@@ -153,6 +154,39 @@ export async function removeFoodEntry(
   const day = all[dateKey];
   if (!day) return;
   day[section] = day[section].filter((e) => e.id !== entryId);
+  all[dateKey] = day;
+  await AsyncStorage.setItem(KEYS.FOOD_LOGS, JSON.stringify(all));
+}
+
+export async function updateFoodEntry(
+  dateKey: string,
+  entryId: string,
+  patch: Partial<FoodEntry> & { section?: MealSection }
+): Promise<void> {
+  const all = await getFoodLogs();
+  const day = all[dateKey];
+  if (!day) return;
+
+  let foundSection: MealSection | null = null;
+  for (const s of ['breakfast', 'lunch', 'dinner', 'snacks'] as const) {
+    if (day[s].some((e) => e.id === entryId)) {
+      foundSection = s;
+      break;
+    }
+  }
+  if (!foundSection) return;
+
+  const { section: targetSection, ...rest } = patch;
+  const prev = day[foundSection].find((e) => e.id === entryId)!;
+  const merged: FoodEntry = { ...prev, ...rest, id: entryId };
+  const nextSection = targetSection ?? foundSection;
+
+  if (nextSection === foundSection) {
+    day[foundSection] = day[foundSection].map((e) => (e.id === entryId ? merged : e));
+  } else {
+    day[foundSection] = day[foundSection].filter((e) => e.id !== entryId);
+    day[nextSection] = [...day[nextSection], merged];
+  }
   all[dateKey] = day;
   await AsyncStorage.setItem(KEYS.FOOD_LOGS, JSON.stringify(all));
 }

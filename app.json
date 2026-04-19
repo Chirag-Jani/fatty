@@ -3,6 +3,14 @@
     "name": "fatty",
     "slug": "fatty",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bc65a54b-cd46-4dc2-9d12-ebc1a647b7ff",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -32,6 +40,9 @@
         "projectId": "bc65a54b-cd46-4dc2-9d12-ebc1a647b7ff"
       }
     },
-    "owner": "chiragjani"
+    "owner": "chiragjani",
+    "plugins": [
+      "@react-native-community/datetimepicker"
+    ]
   }
 }

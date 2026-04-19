@@ -36,6 +36,8 @@ export interface FoodEntry {
   fat: number;
   amount: number;
   amountUnit: FoodAmountUnit;
+  /** Unix ms when the food was logged (local wall time). Omitted on legacy entries. */
+  loggedAt?: number;
 }
 
 export interface FoodTemplate {
